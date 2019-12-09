@@ -116,6 +116,10 @@ module Fastlane
             UI.message("Updating #{file_path} to version #{new_version_short}/#{new_version}")
             Action.sh("sed -i '' \"$(awk '/^VERSION_SHORT/{ print NR; exit }' \"#{file_path}\")s/=.*/=#{new_version_short}/\" \"#{file_path}\"") 
             Action.sh("sed -i '' \"$(awk '/^VERSION_LONG/{ print NR; exit }' \"#{file_path}\")s/=.*/=#{new_version}/\" \"#{file_path}\"")
+            if (ENV["STRIP_LONG_VERSION"]) 
+              new_version_stripped = new_version.gsub(/\./mi, '')
+              Action.sh("sed -i '' \"$(awk '/^VERSION_LONG_STRIPPED/{ print NR; exit }' \"#{file_path}\")s/=.*/=#{new_version_stripped}/\" \"#{file_path}\"")
+            end
           else
             UI.user_error!("#{file_path} not found")
           end
