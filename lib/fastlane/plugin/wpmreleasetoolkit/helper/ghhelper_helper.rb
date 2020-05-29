@@ -60,6 +60,20 @@ module Fastlane
         last_stone
       end
 
+      def self.get_current_milestone(repository)
+        milestones = GHClient().list_milestones(repository, {:state => :open, :sort => :updated})
+        milestones.each do | milestone |
+            if (milestone.title.include?("❄️")) 
+                return milestone.title.strip.split(" ")[0]
+            end
+        end
+      end
+
+      def self.get_open_prs_for_milestone(repository, milestone)
+        return GHClient().search_issues("is:pr is:open draft:false milestone:\"#{milestone}\" repo:\"#{repository}\"")[:items]
+      end
+
+
       def self.create_milestone(repository, newmilestone_number, newmilestone_duedate, need_submission)
         submission_date = need_submission ? newmilestone_duedate.to_datetime.next_day(11) : newmilestone_duedate.to_datetime.next_day(14)
         release_date = newmilestone_duedate.to_datetime.next_day(14)
